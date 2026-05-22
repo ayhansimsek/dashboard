@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #000000;
+    --bg1:     #080808;
+    --bg2:     #101010;
+    --bg3:     #181818;
+    --border:  #1e1e1e;
+    --border2: #2a2a2a;
+    --accent:  #d4a853;
+    --accent2: #b8894a;
+    --text:    #cccccc;
+    --text2:   #777777;
+    --text3:   #3a3a3a;
+    --ticker-h: 36px;
+    --top-h:    72px;
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  html, body {
+    width:100%; height:100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* ── LAYOUT ── */
+  .shell {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    height: var(--top-h);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+
+  .topbar-clock-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .clock {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    letter-spacing: 6px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .datestr {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: var(--text2);
+    text-transform: uppercase;
+  }
+
+  .topbar-live {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .live-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #3ecf6a;
+    box-shadow: 0 0 8px #3ecf6a88;
+    animation: blink 2.5s ease-in-out infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+  .live-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--text3);
+    letter-spacing: 2px;
+  }
+
+  /* ── MAIN WEATHER AREA ── */
+  .main {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── WEATHER BODY ── */
+  .weather-area {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0 32px;
+    justify-content: center;
+    gap: 0;
+  }
+
+  /* Today hero */
+  .today-hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    padding: 24px 0 18px;
+  }
+
+  .today-icon {
+    font-size: 6rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 20px rgba(212,168,83,.15));
+  }
+
+  .today-right {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .today-temp {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 7rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+
+  .today-unit {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: var(--text3);
+    vertical-align: super;
+    line-height: 1;
+  }
+
+  .today-desc {
+    font-size: 1rem;
+    color: var(--text2);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  .today-city {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text3);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .today-meta {
+    display: flex;
+    gap: 28px;
+    margin-top: 6px;
+  }
+
+  .meta-item {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+
+  .meta-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.5rem;
+    color: var(--text3);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .meta-value {
+    font-size: 0.85rem;
+    color: var(--text2);
+    font-weight: 500;
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 0 6px;
+  }
+
+  /* 5-day row */
+  .week-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    padding: 10px 0 20px;
+  }
+
+  .day-card {
+    background: var(--bg1);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 10px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: border-color .2s, background .2s;
+  }
+
+  .day-card:hover {
+    background: var(--bg2);
+    border-color: var(--border2);
+  }
+
+  .day-card.today-card {
+    border-color: var(--accent2);
+    background: var(--bg2);
+  }
+
+  .day-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text2);
+  }
+
+  .day-card.today-card .day-name {
+    color: var(--accent);
+  }
+
+  .day-icon {
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .day-hi {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.9rem;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .day-lo {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text3);
+  }
+
+  .day-rain {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    color: #5b8dee;
+    letter-spacing: 1px;
+  }
+
+  /* ── TICKER ── */
+  .ticker-bar {
+    height: var(--ticker-h);
+    flex-shrink: 0;
+    background: var(--bg1);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ticker-label {
+    flex-shrink: 0;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    padding: 0 14px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    z-index: 2;
+  }
+
+  .ticker-fade {
+    position: absolute;
+    left: 80px;
+    width: 40px;
+    height: 100%;
+    background: linear-gradient(90deg, var(--bg1), transparent);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .ticker-track {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    white-space: nowrap;
+    animation: scroll-ticker 0s linear infinite;
+    will-change: transform;
+  }
+
+  @keyframes scroll-ticker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(var(--shift, -50%)); }
+  }
+
+  .ticker-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 36px;
+    font-size: 0.78rem;
+    color: var(--text2);
+    letter-spacing: 0.3px;
+    font-weight: 400;
+  }
+
+  .ticker-item::before {
+    content: '◆';
+    color: var(--accent2);
+    font-size: 0.4rem;
+    margin-right: 36px;
+    opacity: 0.7;
+  }
+
+  .ticker-src {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--accent2);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-right: 10px;
+  }
+
+  /* loading state */
+  .weather-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    height: 100%;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text3);
+    letter-spacing: 2px;
+  }
+
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- TOP BAR: clock + date centred -->
+  <div class="topbar">
+    <div class="topbar-clock-block">
+      <div class="clock" id="clock">00:00:00</div>
+      <div class="datestr" id="datestr">—</div>
+    </div>
+    <div class="topbar-live">
+      <div class="live-dot"></div>
+      <div class="live-label">LIVE</div>
+    </div>
+  </div>
+
+  <!-- MAIN: weather fills this -->
+  <div class="main">
+    <div class="weather-area" id="weatherArea">
+      <div class="weather-loading"><div class="spinner"></div>FETCHING WEATHER</div>
+    </div>
+  </div>
+
+  <!-- TICKER: bottom strip -->
+  <div class="ticker-bar">
+    <div class="ticker-label">ABC NEWS</div>
+    <div class="ticker-fade"></div>
+    <div style="overflow:hidden;flex:1;height:100%;display:flex;align-items:center;">
+      <div class="ticker-track" id="tickerTrack">
+        <span class="ticker-item"><span class="ticker-src">LOADING</span>Fetching latest headlines from ABC News Australia…</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── CLOCK ──────────────────────────────────────────────────────────────
+const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function updateClock() {
+  const n = new Date();
+  const pad = v => String(v).padStart(2,'0');
+  document.getElementById('clock').textContent = `${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
+  document.getElementById('datestr').textContent =
+    `${DAYS[n.getDay()]}  ·  ${n.getDate()} ${MONTHS[n.getMonth()]} ${n.getFullYear()}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── WMO MAPS ──────────────────────────────────────────────────────────
+const WMO_ICON = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'🌩️',95:'⛈️',96:'⛈️',99:'⛈️'};
+const WMO_DESC = {0:'Clear Sky',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Icy Fog',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',80:'Showers',81:'Heavy Showers',82:'Violent Showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
+const DAY_SHORT = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+
+// ── WEATHER ───────────────────────────────────────────────────────────
+async function fetchWeather() {
+  // Melbourne fixed
+  const lat = -37.8136, lon = 144.9631, cityName = 'Melbourne, VIC';
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weathercode,apparent_temperature&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max&timezone=Australia%2FMelbourne&forecast_days=5`;
+
+  try {
+    const r = await fetch(url);
+    const d = await r.json();
+    renderWeather(d, cityName);
+  } catch(e) {
+    document.getElementById('weatherArea').innerHTML =
+      `<div class="weather-loading">⚠ WEATHER UNAVAILABLE</div>`;
+  }
+}
+
+function renderWeather(d, cityName) {
+  const cur   = d.current;
+  const daily = d.daily;
+  const icon  = WMO_ICON[cur.weathercode]  || '🌡️';
+  const desc  = WMO_DESC[cur.weathercode]  || '';
+
+  const weekCards = daily.time.map((dateStr, i) => {
+    const dt   = new Date(dateStr + 'T12:00:00');
+    const name = i === 0 ? 'TODAY' : DAY_SHORT[dt.getDay()];
+    const hi   = Math.round(daily.temperature_2m_max[i]);
+    const lo   = Math.round(daily.temperature_2m_min[i]);
+    const ic   = WMO_ICON[daily.weathercode[i]] || '🌡️';
+    const rain = daily.precipitation_probability_max[i];
+    return `
+      <div class="day-card${i===0?' today-card':''}">
+        <div class="day-name">${name}</div>
+        <div class="day-icon">${ic}</div>
+        <div class="day-hi">${hi}°</div>
+        <div class="day-lo">Low ${lo}°</div>
+        ${rain ? `<div class="day-rain">💧 ${rain}%</div>` : ''}
+      </div>`;
+  }).join('');
+
+  document.getElementById('weatherArea').innerHTML = `
+    <div class="today-hero">
+      <div class="today-icon">${icon}</div>
+      <div class="today-right">
+        <div style="display:flex;align-items:baseline;gap:4px">
+          <div class="today-temp">${Math.round(cur.temperature_2m)}</div>
+          <div class="today-unit">°C</div>
+        </div>
+        <div class="today-desc">${desc}</div>
+        <div class="today-city">${cityName}</div>
+        <div class="today-meta">
+          <div class="meta-item">
+            <span class="meta-label">Feels Like</span>
+            <span class="meta-value">${Math.round(cur.apparent_temperature)}°C</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Humidity</span>
+            <span class="meta-value">${cur.relative_humidity_2m}%</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Wind</span>
+            <span class="meta-value">${Math.round(cur.wind_speed_10m)} km/h</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Rain Chance</span>
+            <span class="meta-value">${daily.precipitation_probability_max[0]}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="week-row">${weekCards}</div>
+  `;
+}
+
+// ── TICKER / RSS ──────────────────────────────────────────────────────
+const PROXY = 'https://api.allorigins.win/get?url=';
+const ABC_FEEDS = [
+  'https://www.abc.net.au/news/feed/51120/rss.xml',       // Top Stories
+  'https://www.abc.net.au/news/feed/2942460/rss.xml',     // Australia
+  'https://www.abc.net.au/news/feed/9489562/rss.xml',     // World
+];
+
+let tickerItems = [];
+
+async function fetchOneFeed(url) {
+  try {
+    const r   = await fetch(PROXY + encodeURIComponent(url));
+    const j   = await r.json();
+    const xml = new DOMParser().parseFromString(j.contents, 'text/xml');
+    return [...xml.querySelectorAll('item')].slice(0, 12).map(it => ({
+      title: it.querySelector('title')?.textContent?.trim() || '',
+    })).filter(x => x.title);
+  } catch { return []; }
+}
+
+async function loadTicker() {
+  const results = await Promise.all(ABC_FEEDS.map(fetchOneFeed));
+  const flat = results.flat();
+  // dedupe by title
+  const seen = new Set();
+  tickerItems = flat.filter(x => { if(seen.has(x.title)) return false; seen.add(x.title); return true; });
+  if (tickerItems.length) buildTicker();
+}
+
+function buildTicker() {
+  if (!tickerItems.length) return;
+  const track = document.getElementById('tickerTrack');
+
+  // Build double-set for seamless loop
+  const makeItem = item =>
+    `<span class="ticker-item"><span class="ticker-src">ABC</span>${escHtml(item.title)}</span>`;
+
+  const html = tickerItems.map(makeItem).join('');
+  track.innerHTML = html + html; // duplicate for seamless loop
+
+  // Measure total width of one set, then animate
+  requestAnimationFrame(() => {
+    const fullW = track.scrollWidth / 2;
+    const speed = 80; // px per second
+    const dur   = fullW / speed;
+    track.style.setProperty('--shift', `-${fullW}px`);
+    track.style.animationDuration = `${dur}s`;
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+fetchWeather();
+loadTicker();
+
+// Refresh weather every 20 min, ticker every 15 min
+setInterval(fetchWeather, 20 * 60 * 1000);
+setInterval(loadTicker,   15 * 60 * 1000);
+</script>
+</body>
+</html>
