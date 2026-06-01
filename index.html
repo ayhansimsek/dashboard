@@ -3,619 +3,934 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Family Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:      #000000;
-    --bg1:     #080808;
-    --bg2:     #101010;
-    --border:  #202020;
-    --border2: #2e2e2e;
-    --accent:  #d4a853;
-    --accent2: #b8894a;
-    --text:    #e0e0e0;
-    --text2:   #999999;
-    --text3:   #444444;
-    --blue:    #5b8dee;
-    --green:   #3ecf6a;
+:root {
+  /* ── Soft sky-teal kids palette ─────────────────────────────
+     Kid-friendly, cheerful pastel blue background
+     instead of stark white, keeping cards clean.
+  ──────────────────────────────────────────────────────────── */
+  --bg:       #d8f1fa;   /* Cheerful pastel sky blue */
+  --bg2:      #e6f7fc;
+  --bg3:      #c2e5df;
+  --card:     #ffffff;   /* white cards */
+  --card2:    #f0faf8;
+  --border:   #aaddd5;
+  --text:     #1a3a36;   /* dark teal text */
+  --text2:    #3d6b65;
+  --text3:    #6ea099;
+  --accent:   #0db89e;   /* vibrant teal */
+  --accent2:  #ff8c42;   /* warm orange */
+  --green:    #22c55e;
+  --green-bg: #dcfce7;
+  --pink:     #f06292;
+  --purple:   #9c6fdd;
+  --yellow:   #f59e0b;
+  --yellow-bg:#fef9c3;
+  --red:      #ef4444;
+  --red-bg:   #fee2e2;
+  --teal:     #0db89e;
+  --sky:      #38bdf8;
+
+  /* Activity colors */
+  --col-reading: #2563eb;
+  --col-math:    #16a34a;
+  --col-writing: #d97706;
+  --col-dance:   #db2777;
+  --col-tv:      #7c3aed;
+  --col-routine: #dc2626;
+
+  --radius: 20px;
+  --radius-sm: 14px;
+  --shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+}
+
+/* Cheerful cloud/sun background */
+body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse 700px 400px at 85% 5%,  rgba(255,210,80,0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 300px at 15% 90%, rgba(13,184,158,0.18)  0%, transparent 70%),
+    radial-gradient(ellipse 400px 250px at 55% 50%, rgba(56,189,248,0.15)  0%, transparent 70%);
+}
+
+/* ---- LAYOUT ---- */
+.dashboard {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: 300px 1fr 270px;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "header header header"
+    "left   center right";
+  gap: 12px;
+  padding: 12px;
+  width: 100vw; height: 100vh;
+}
+
+/* HEADER */
+.header {
+  grid-area: header;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 24px;
+  gap: 20px;
+  box-shadow: var(--shadow);
+}
+.header-left { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.header-emoji { font-size: 32px; } /* YAZILAR BÜYÜTÜLDÜ */
+.header-title { font-family: 'Baloo 2', sans-serif; font-size: 24px; font-weight: 800; color: var(--accent); } /* YAZILAR BÜYÜTÜLDÜ */
+
+.clock-block { text-align: center; flex-shrink: 0; }
+.clock-time { 
+  font-family: 'Baloo 2', sans-serif; font-size: 42px; font-weight: 800; color: var(--text); 
+  line-height: 1; letter-spacing: 2px; display: flex; align-items: baseline; justify-content: center; gap: 6px; 
+} /* SAAT BÜYÜTÜLDÜ VE FLEX YAPILDI */
+.clock-ampm { font-size: 16px; color: var(--text3); font-weight: 800; letter-spacing: 0px; }
+.clock-icon { font-size: 32px; line-height: 1; transform: translateY(4px); }
+.clock-date { font-size: 14px; color: var(--text3); margin-top: 4px; font-weight: 700; } /* TARİH BÜYÜTÜLDÜ */
+
+.header-weather { flex: 1; overflow: hidden; }
+.header-wx-now { display: flex; align-items: center; gap: 12px; }
+.header-wx-icon { font-size: 32px; line-height: 1; } /* HAVA DURUMU İKONU BÜYÜTÜLDÜ */
+.header-wx-temp { font-family: 'Baloo 2', sans-serif; font-size: 32px; font-weight: 800; color: var(--text); line-height: 1; } /* DERECE BÜYÜTÜLDÜ */
+.header-wx-desc { font-size: 13px; color: var(--text2); font-weight: 700; }
+.header-wx-range { font-size: 12px; color: var(--text3); }
+
+.wx-hourly { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; margin-top: 4px; }
+.wx-hourly::-webkit-scrollbar { height: 3px; }
+.wx-hourly::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.wx-hour {
+  flex-shrink: 0; background: var(--bg2); border-radius: 8px;
+  padding: 6px 8px; text-align: center; min-width: 48px;
+  border: 1px solid transparent;
+}
+.wx-hour.now { border-color: var(--accent); background: #e0faf6; }
+.wx-hour-time { font-size: 11px; color: var(--text3); font-weight: 700; }
+.wx-hour-icon { font-size: 18px; line-height: 1.2; }
+.wx-hour-temp { font-size: 12px; font-weight: 800; color: var(--text2); }
+
+.wx-forecast-strip { display: flex; gap: 5px; margin-left: 12px; flex-shrink: 0; }
+.wx-fday { background: var(--bg2); border-radius: 8px; padding: 4px 8px; text-align: center; min-width: 50px; }
+.wx-fday-name  { font-size: 11px; font-weight: 800; color: var(--text3); }
+.wx-fday-icon  { font-size: 18px; line-height: 1.3; }
+.wx-fday-range { font-size: 11px; font-weight: 700; color: var(--text2); white-space: nowrap; }
+
+/* COLUMNS */
+.left  { grid-area: left;   display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+.right { grid-area: right;  display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+.center{ grid-area: center; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+
+/* CARDS */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  flex-shrink: 0;
+  box-shadow: var(--shadow);
+}
+.card-title {
+  font-size: 12px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--text3); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.card-title span { font-size: 16px; }
+
+/* ---- TIMER ---- */
+.timer-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.timer-preset-btn {
+  background: var(--bg2); border: 1.5px solid var(--border); border-radius: 20px;
+  color: var(--text2); font-size: 13px; font-weight: 800; padding: 5px 12px;
+  cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.15s;
+}
+.timer-preset-btn:active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.timer-display {
+  text-align: center; padding: 12px;
+  background: var(--bg2); border-radius: var(--radius); margin-bottom: 12px;
+}
+.timer-ring-wrap { position: relative; width: 110px; height: 110px; margin: 0 auto 4px; }
+.timer-ring { transform: rotate(-90deg); }
+.timer-ring-bg { fill: none; stroke: var(--border); stroke-width: 6; }
+.timer-ring-progress { fill: none; stroke: var(--green); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.timer-time  { font-family: 'Baloo 2', sans-serif; font-size: 28px; font-weight: 800; color: var(--text); }
+.timer-label { font-size: 11px; color: var(--text3); }
+
+.timer-controls { display: flex; gap: 8px; }
+.timer-btn {
+  flex: 1; padding: 10px; border-radius: var(--radius-sm);
+  border: none; cursor: pointer; font-family: 'Nunito', sans-serif;
+  font-size: 14px; font-weight: 800; transition: all 0.15s; color: #fff;
+}
+.timer-btn-start { background: var(--green); }
+.timer-btn-pause { background: var(--yellow); }
+.timer-btn-reset { background: var(--red); }
+.timer-custom { display: flex; gap: 6px; margin-top: 10px; }
+.timer-custom input {
+  flex: 1; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 8px;
+  color: var(--text); font-family: 'Nunito', sans-serif; font-size: 14px;
+  padding: 8px 12px; text-align: center;
+}
+.timer-custom input:focus { outline: none; border-color: var(--accent); }
+.timer-custom button {
+  background: var(--accent); color: #fff; border: none; border-radius: 8px;
+  font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800;
+  padding: 8px 14px; cursor: pointer;
+}
+
+/* ---- HOME ASSISTANT ---- */
+.ha-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ha-tile {
+  background: var(--bg2); border-radius: var(--radius-sm);
+  padding: 12px; cursor: pointer; border: 1.5px solid var(--border);
+  transition: all 0.2s; user-select: none;
+}
+.ha-tile.on      { border-color: var(--sky);    background: #eff9ff; }
+.ha-tile.on.warm { border-color: var(--yellow); background: #fffbeb; }
+.ha-tile.on.pink { border-color: var(--pink);   background: #fff0f5; }
+.ha-tile:active  { transform: scale(0.96); }
+.ha-tile-icon  { font-size: 24px; margin-bottom: 6px; }
+.ha-tile-name  { font-size: 12px; font-weight: 800; color: var(--text2); }
+.ha-tile-state { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.ha-tile.on      .ha-tile-state { color: var(--sky); }
+.ha-tile.on.warm .ha-tile-state { color: var(--yellow); }
+.ha-tile.on.pink .ha-tile-state { color: var(--pink); }
+
+.ha-tile.vacuum-tile { grid-column: span 2; display: flex; align-items: center; gap: 12px; }
+.ha-tile.vacuum-tile .ha-tile-icon { font-size: 28px; margin-bottom: 0; }
+.vacuum-info { flex: 1; }
+.vacuum-btns { display: flex; gap: 6px; }
+.vacuum-btn {
+  background: var(--bg3); border: 1.5px solid var(--border); border-radius: 8px;
+  color: var(--text2); font-size: 12px; font-weight: 800; padding: 6px 10px;
+  cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.15s;
+}
+.vacuum-btn.start { border-color: var(--green); color: var(--green); }
+.vacuum-btn.stop  { border-color: var(--red);   color: var(--red); }
+.vacuum-btn.dock  { border-color: var(--yellow); color: var(--yellow); }
+.vacuum-btn:active { filter: brightness(0.9); }
+.ha-note { font-size: 11px; color: var(--text3); margin-top: 10px; text-align: center; line-height: 1.4; }
+
+/* ---- CALENDAR ---- */
+.calendar-wrap { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.calendar-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.cal-nav-btn { background: var(--bg2); border: 1.5px solid var(--border); color: var(--text2); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-size: 18px; font-weight: 700; }
+.cal-month { font-family: 'Baloo 2', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.cal-day-header { text-align: center; font-size: 11px; font-weight: 800; color: var(--text3); padding: 4px; text-transform: uppercase; }
+.cal-day {
+  text-align: center; border-radius: 8px; padding: 4px 2px;
+  font-size: 13px; cursor: pointer; transition: background 0.15s; min-height: 32px;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.cal-day:hover { background: var(--bg2); }
+.cal-day.today { background: var(--accent); color: #fff; font-weight: 900; }
+.cal-day.other-month { opacity: 0.35; }
+.cal-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+.events-list { margin-top: 10px; overflow-y: auto; flex: 1; }
+.events-list::-webkit-scrollbar { width: 3px; }
+.events-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.event-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; background: var(--bg2); margin-bottom: 6px; }
+.event-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.event-text { flex: 1; }
+.event-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.event-time  { font-size: 11px; color: var(--text3); }
+.event-del { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 16px; padding: 0; }
+.add-event-btn { width: 100%; margin-top: 8px; padding: 8px; background: var(--bg2); border: 1.5px dashed var(--border); border-radius: 8px; color: var(--text3); font-family: 'Nunito', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+.add-event-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.modal { background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 24px; width: 340px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+.modal h3 { font-family: 'Baloo 2', sans-serif; font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 16px; }
+.modal label { display: block; font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; margin-top: 12px; }
+.modal input, .modal select { width: 100%; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'Nunito', sans-serif; font-size: 14px; padding: 10px 12px; }
+.modal input:focus, .modal select:focus { outline: none; border-color: var(--accent); }
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+.modal-save   { flex: 1; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 15px; padding: 12px; cursor: pointer; }
+.modal-cancel { padding: 12px 18px; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 8px; color: var(--text2); font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; }
+
+/* ================================================================
+   SCHEDULE — big kid-friendly buttons
+================================================================ */
+.schedule-day-tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.day-tab {
+  padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 800;
+  cursor: pointer; border: 1.5px solid var(--border); background: var(--bg2); color: var(--text3);
+  transition: all 0.15s;
+}
+.day-tab.active         { background: var(--accent); color: #fff; border-color: var(--accent); }
+.day-tab.weekend        { border-color: var(--pink); color: var(--pink); }
+.day-tab.weekend.active { background: var(--pink); color: #fff; border-color: var(--pink); }
+.day-tab.today-tab      { border-color: var(--yellow); }
+
+/* Section label */
+.sched-section-label {
+  font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--text3); padding: 8px 2px 4px;
+}
+
+/* ── The main list fills all available space ── */
+.schedule-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;           /* space between items */
+  padding-right: 4px;
+}
+.schedule-list::-webkit-scrollbar { width: 4px; }
+.schedule-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ── Each row: tall, touchable, prominent ── */
+.schedule-item {
+  display: flex; align-items: center; gap: 14px;
+  border-radius: var(--radius-sm); padding: 14px 16px;
+  border: 2px solid var(--border);
+  background: var(--bg2);
+  transition: all 0.2s;
+  cursor: default;
+  min-height: 68px;   /* big enough for small fingers */
+}
+
+/* ── DONE state: green glow, keep visible ── */
+.schedule-item.done {
+  background: var(--green-bg) !important;
+  border-color: var(--green) !important;
+}
+.schedule-item.done .schedule-name { color: var(--green) !important; }
+
+/* routines are tappable */
+.schedule-item.routine { cursor: pointer; }
+.schedule-item.routine:active { transform: scale(0.98); }
+
+/* ── Routine done: bright green card ── */
+.schedule-item.routine.done {
+  background: var(--green-bg) !important;
+  border-color: var(--green) !important;
+}
+.schedule-item.routine.done .schedule-name { color: #15803d !important; }
+
+/* ── The checkbox / tick button ── */
+.sched-check {
+  width: 40px; height: 40px; border-radius: 12px;
+  flex-shrink: 0; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  font-size: 22px;
+  user-select: none;
+}
+/* routine default: red X */
+.sched-check.routine-unchecked {
+  background: var(--red-bg);
+  border: 2px solid var(--red);
+  color: var(--red);
+}
+/* routine done: green ✓ */
+.sched-check.routine-checked {
+  background: var(--green);
+  border: 2px solid var(--green);
+  color: #fff;
+}
+/* activity neutral */
+.sched-check.act-unchecked {
+  background: var(--bg3);
+  border: 2px solid var(--border);
+  color: var(--text3);
+  font-size: 16px;
+}
+/* activity done */
+.sched-check.act-checked {
+  background: var(--green);
+  border: 2px solid var(--green);
+  color: #fff;
+  font-size: 22px;
+}
+.sched-check:active { transform: scale(0.85); }
+
+.schedule-icon { font-size: 28px; width: 36px; text-align: center; flex-shrink: 0; }
+.schedule-info { flex: 1; min-width: 0; }
+.schedule-name { font-size: 16px; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.schedule-sub  { font-size: 12px; color: var(--text3); margin-top: 3px; }
+.schedule-duration {
+  font-size: 13px; font-weight: 800;
+  background: rgba(0,0,0,0.06); border-radius: 8px;
+  padding: 4px 10px; flex-shrink: 0; color: var(--text3);
+}
+.schedule-timer-btn {
+  background: var(--bg3); border: 1.5px solid var(--border); border-radius: 10px;
+  font-size: 18px; cursor: pointer; padding: 6px 10px; opacity: 0.75;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.schedule-timer-btn:active { opacity: 1; background: var(--accent); border-color: var(--accent); }
+
+.today-highlight {
+  font-size: 12px; color: #92400e; font-weight: 800; text-align: center;
+  padding: 6px 10px; background: #fef3c7; border-radius: 10px; margin-bottom: 8px;
+  border: 1.5px solid #fcd34d;
+}
+
+/* scrollbar global */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* toast */
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--green); color: #fff; padding: 12px 24px; border-radius: 20px; font-weight: 800; font-size: 15px; z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+.toast.show { opacity: 1; }
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.timer-alarm { animation: pulse 0.6s infinite; color: var(--red) !important; }
+
+/* ================================================================
+   RESPONSIVE
+================================================================ */
+@media (max-width: 820px) {
+  .dashboard {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "header header"
+      "left   right"
+      "center center";
+    height: auto; overflow-y: auto; overflow-x: hidden;
   }
-
-  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-
-  html, body {
-    width:100%; height:100%;
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    overflow: hidden;
-    -webkit-font-smoothing: antialiased;
-    -webkit-text-size-adjust: 100%;
-  }
-
-  .shell {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    width: 100vw;
-  }
-
-  /* ── TOP BAR ── */
-  .topbar {
-    height: 90px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg);
-    position: relative;
-  }
-
-  .clock {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 4.2rem;
-    letter-spacing: 8px;
-    color: var(--accent);
-    line-height: 1;
-  }
-
-  .datestr {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.8rem;
-    letter-spacing: 4px;
-    color: var(--text2);
-    text-transform: uppercase;
-    text-align: center;
-    margin-top: 2px;
-  }
-
-  .topbar-live {
-    position: absolute;
-    right: 24px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .live-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 10px var(--green);
-    animation: blink 2.5s ease-in-out infinite;
-  }
-
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.15} }
-
-  .live-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--text3);
-    letter-spacing: 2px;
-  }
-
-  /* ── MAIN WEATHER AREA ── */
-  .main {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    padding: 0 40px;
-    justify-content: center;
-    gap: 0;
-  }
-
-  /* Today hero */
-  .today-hero {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 48px;
-    padding: 20px 0 16px;
-  }
-
-  .today-icon {
-    font-size: 8rem;
-    line-height: 1;
-    filter: drop-shadow(0 0 24px rgba(212,168,83,.2));
-  }
-
-  .today-right {}
-
-  .today-temp-row {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    line-height: 1;
-  }
-
-  .today-temp {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 9rem;
-    color: var(--accent);
-    letter-spacing: 2px;
-    line-height: 1;
-  }
-
-  .today-unit {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 4rem;
-    color: var(--text3);
-    line-height: 1;
-    padding-bottom: 8px;
-  }
-
-  .today-desc {
-    font-size: 1.4rem;
-    color: var(--text2);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-weight: 300;
-    margin-top: 2px;
-  }
-
-  .today-city {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--text3);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-top: 6px;
-  }
-
-  .today-meta {
-    display: flex;
-    gap: 36px;
-    margin-top: 12px;
-  }
-
-  .meta-item {
-    display: flex; flex-direction: column; gap: 3px;
-  }
-
-  .meta-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.6rem;
-    color: var(--text3);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-
-  .meta-value {
-    font-size: 1.1rem;
-    color: var(--text2);
-    font-weight: 500;
-  }
-
-  /* Divider */
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 4px 0 8px;
-  }
-
-  /* 5-day row */
-  .week-row {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    padding: 6px 0 16px;
-  }
-
-  .day-card {
-    background: var(--bg1);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 10px 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    transition: border-color .2s, background .2s;
-  }
-
-  .day-card.today-card {
-    border-color: var(--accent2);
-    background: var(--bg2);
-  }
-
-  .day-name {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.72rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text2);
-  }
-
-  .day-card.today-card .day-name { color: var(--accent); }
-
-  .day-icon { font-size: 2.4rem; line-height: 1; }
-
-  .day-hi {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.4rem;
-    color: var(--text);
-    line-height: 1;
-  }
-
-  .day-lo {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--text3);
-  }
-
-  .day-rain {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--blue);
-    letter-spacing: 1px;
-  }
-
-  /* ── TICKER ── */
-  .ticker-bar {
-    height: 46px;
-    flex-shrink: 0;
-    background: var(--bg1);
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .ticker-label {
-    flex-shrink: 0;
-    background: var(--accent);
-    color: #000;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 3px;
-    padding: 0 18px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    z-index: 2;
-  }
-
-  .ticker-fade {
-    position: absolute;
-    left: 100px;
-    width: 50px;
-    height: 100%;
-    background: linear-gradient(90deg, var(--bg1), transparent);
-    z-index: 1;
-    pointer-events: none;
-  }
-
-  .ticker-overflow {
-    overflow: hidden;
-    flex: 1;
-    height: 100%;
-    display: flex;
-    align-items: center;
-  }
-
-  .ticker-track {
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
-    will-change: transform;
-  }
-
-  .ticker-item {
-    display: inline-flex;
-    align-items: center;
-    padding: 0 44px;
-    font-size: 0.95rem;
-    color: var(--text2);
-    letter-spacing: 0.3px;
-    font-weight: 400;
-  }
-
-  .ticker-item::before {
-    content: '◆';
-    color: var(--accent2);
-    font-size: 0.45rem;
-    margin-right: 44px;
-    opacity: 0.8;
-  }
-
-  .ticker-src {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.6rem;
-    color: var(--accent);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin-right: 12px;
-  }
-
-  .weather-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    height: 100%;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--text3);
-    letter-spacing: 2px;
-  }
-
-  .spinner {
-    width: 20px; height: 20px;
-    border: 2px solid var(--border2);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin .8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  html, body { overflow: auto; height: auto; }
+  .left, .right, .center { overflow: visible; }
+  .schedule-list { max-height: 560px; }
+  .events-list   { max-height: 130px; }
+  .wx-forecast-strip { display: none; }
+}
+@media (max-width: 540px) {
+  .dashboard { grid-template-columns: 1fr; grid-template-areas: "header" "left" "center" "right"; }
+  .header { flex-wrap: wrap; gap: 10px; }
+}
 </style>
 </head>
 <body>
-<div class="shell">
+<div class="dashboard">
 
-  <div class="topbar">
-    <div>
-      <div class="clock" id="clock">00:00:00</div>
-      <div class="datestr" id="datestr">—</div>
+  <header class="header">
+    <div class="header-left">
+      <div class="header-emoji">🌟</div>
+      <div class="header-title">Family Dashboard</div>
     </div>
-    <div class="topbar-live">
-      <div class="live-dot"></div>
-      <div class="live-label">LIVE</div>
+    <div class="clock-block">
+      <div class="clock-time" id="clockTime">--:--</div>
+      <div class="clock-date" id="clockDate">--</div>
+    </div>
+    <div class="header-weather">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="header-wx-now">
+          <div class="header-wx-icon" id="hdr-wx-icon">⏳</div>
+          <div>
+            <div style="display:flex;align-items:flex-end;gap:2px;">
+              <div class="header-wx-temp" id="hdr-wx-temp">--</div>
+              <span style="font-size:14px;color:var(--text3);padding-bottom:4px;">°C</span>
+            </div>
+            <div class="header-wx-desc" id="hdr-wx-desc">Loading…</div>
+            <div class="header-wx-range" id="hdr-wx-range"></div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div class="wx-hourly" id="wx-hourly"></div>
+        </div>
+        <div class="wx-forecast-strip" id="wx-forecast-strip"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="left">
+    <div class="card">
+      <div class="card-title"><span>⏱</span> Timer</div>
+      <div class="timer-presets">
+        <button class="timer-preset-btn" onclick="setTimer(5)">5 min</button>
+        <button class="timer-preset-btn" onclick="setTimer(10)">10 min</button>
+        <button class="timer-preset-btn" onclick="setTimer(15)">15 min</button>
+        <button class="timer-preset-btn" onclick="setTimer(20)">20 min</button>
+        <button class="timer-preset-btn" onclick="setTimer(25)">25 min</button>
+        <button class="timer-preset-btn" onclick="setTimer(30)">30 min</button>
+      </div>
+      <div class="timer-display">
+        <div class="timer-ring-wrap">
+          <svg class="timer-ring" viewBox="0 0 110 110" width="110" height="110">
+            <circle class="timer-ring-bg" cx="55" cy="55" r="48"/>
+            <circle class="timer-ring-progress" id="timerRing" cx="55" cy="55" r="48"
+              stroke-dasharray="301.59" stroke-dashoffset="0"/>
+          </svg>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+            <div class="timer-time" id="timerDisplay">00:00</div>
+            <div class="timer-label" id="timerLabel">Set a timer</div>
+          </div>
+        </div>
+      </div>
+      <div class="timer-controls">
+        <button class="timer-btn timer-btn-start" onclick="timerStart()">▶ Start</button>
+        <button class="timer-btn timer-btn-pause" onclick="timerPause()">⏸</button>
+        <button class="timer-btn timer-btn-reset" onclick="timerReset()">↺</button>
+      </div>
+      <div class="timer-custom">
+        <input type="number" id="customMinutes" placeholder="min" min="1" max="120">
+        <button onclick="setTimerCustom()">Set</button>
+      </div>
+    </div>
+
+    <div class="card" style="flex:1;">
+      <div class="card-title"><span>🏠</span> Home Assistant</div>
+      <div class="ha-grid">
+        <div class="ha-tile warm" id="ha-livingroom" onclick="haToggle('ha-livingroom')" data-accent="warm">
+          <div class="ha-tile-icon">💡</div>
+          <div class="ha-tile-name">Living Room</div>
+          <div class="ha-tile-state">Off</div>
+        </div>
+        <div class="ha-tile warm" id="ha-bedroom" onclick="haToggle('ha-bedroom')" data-accent="warm">
+          <div class="ha-tile-icon">🛏</div>
+          <div class="ha-tile-name">Bedroom</div>
+          <div class="ha-tile-state">Off</div>
+        </div>
+        <div class="ha-tile warm" id="ha-kitchen" onclick="haToggle('ha-kitchen')" data-accent="warm">
+          <div class="ha-tile-icon">🍳</div>
+          <div class="ha-tile-name">Kitchen</div>
+          <div class="ha-tile-state">Off</div>
+        </div>
+        <div class="ha-tile pink" id="ha-kidroom" onclick="haToggle('ha-kidroom')" data-accent="pink">
+          <div class="ha-tile-icon">🧒</div>
+          <div class="ha-tile-name">Kid's Room</div>
+          <div class="ha-tile-state">Off</div>
+        </div>
+        <div class="ha-tile vacuum-tile">
+          <div class="ha-tile-icon">🤖</div>
+          <div class="vacuum-info">
+            <div class="ha-tile-name">Robot Vacuum</div>
+            <div class="ha-tile-state" id="vacuum-state">Docked · Ready</div>
+          </div>
+          <div class="vacuum-btns">
+            <button class="vacuum-btn start" onclick="vacuumCmd('start')">▶ Start</button>
+            <button class="vacuum-btn stop"  onclick="vacuumCmd('pause')">⏸</button>
+            <button class="vacuum-btn dock"  onclick="vacuumCmd('dock')">⏏ Dock</button>
+          </div>
+        </div>
+      </div>
+      <div class="ha-note" id="ha-note">💡 Set HA_ENABLED=true and add your token below to go live.</div>
     </div>
   </div>
 
-  <div class="main" id="weatherArea">
-    <div class="weather-loading"><div class="spinner"></div>FETCHING WEATHER…</div>
+  <div class="center">
+    <div class="card" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+      <div class="card-title"><span>📋</span> Daily Routines &amp; Schedule</div>
+      <div class="schedule-day-tabs" id="scheduleTabs"></div>
+      <div id="todayHighlight" class="today-highlight" style="display:none;">⭐ Today's schedule</div>
+      <div class="schedule-list" id="scheduleList"></div>
+    </div>
   </div>
 
-  <div class="ticker-bar">
-    <div class="ticker-label">ABC NEWS</div>
-    <div class="ticker-fade"></div>
-    <div class="ticker-overflow">
-      <div class="ticker-track" id="tickerTrack">
-        <span class="ticker-item"><span class="ticker-src">LOADING</span>Fetching latest headlines…</span>
+  <div class="right">
+    <div class="card" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+      <div class="card-title"><span>📅</span> Family Calendar</div>
+      <div class="calendar-wrap">
+        <div class="calendar-nav">
+          <button class="cal-nav-btn" onclick="calNav(-1)">‹</button>
+          <div class="cal-month" id="calMonth">--</div>
+          <button class="cal-nav-btn" onclick="calNav(1)">›</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="events-list" id="eventsList"></div>
+        <button class="add-event-btn" onclick="openAddEvent()">+ Add Event</button>
       </div>
     </div>
   </div>
 
 </div>
+
+<div class="modal-overlay" id="eventModal" style="display:none;">
+  <div class="modal">
+    <h3>✏️ Add Event</h3>
+    <label>Title</label>
+    <input type="text" id="evTitle" placeholder="e.g. Doctor appointment">
+    <label>Date</label>
+    <input type="date" id="evDate">
+    <label>Time (optional)</label>
+    <input type="time" id="evTime">
+    <label>Color</label>
+    <select id="evColor">
+      <option value="#0db89e">💚 Teal</option>
+      <option value="#38bdf8">💙 Sky Blue</option>
+      <option value="#f472b6">💗 Pink</option>
+      <option value="#9c6fdd">💜 Purple</option>
+      <option value="#ff8c42">🧡 Orange</option>
+      <option value="#f59e0b">💛 Yellow</option>
+      <option value="#ef4444">❤️ Red</option>
+    </select>
+    <label>Who</label>
+    <select id="evWho">
+      <option value="Family">👨‍👩‍👧 Family</option>
+      <option value="Me">🙋 Me</option>
+      <option value="Partner">💑 Partner</option>
+      <option value="Kid">🧒 Kid</option>
+    </select>
+    <div class="modal-actions">
+      <button class="modal-save" onclick="saveEvent()">Save Event</button>
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
 <script>
-// ── SCHEDULED REFRESH ──────────────────────────────────────────────────
-// Refresh at 05:00 and 18:00 Melbourne time (AEST UTC+10 / AEDT UTC+11)
-function scheduleRefresh() {
-  const now = new Date();
-  // Get Melbourne local time
-  const melbStr = now.toLocaleString('en-AU', { timeZone: 'Australia/Melbourne', hour:'numeric', minute:'numeric', hour12: false });
-  const [h, m] = melbStr.split(':').map(Number);
-  const nowMinutes = h * 60 + m;
-  const targets = [5 * 60, 18 * 60]; // 05:00 and 18:00
+/* ── Home Assistant ── */
+const HA_ENABLED = false;
+const HA_URL     = "http://homeassistant.local:8123";
+const HA_TOKEN   = "YOUR_LONG_LIVED_TOKEN_HERE";
+const HA_DEVICES = {
+  "ha-livingroom": { entity_id: "light.living_room" },
+  "ha-bedroom":    { entity_id: "light.bedroom"      },
+  "ha-kitchen":    { entity_id: "light.kitchen"      },
+  "ha-kidroom":    { entity_id: "light.kids_room"    },
+};
+const HA_VACUUM_ENTITY = "vacuum.roborock";
 
-  // Find next target
-  let nextMins = targets.find(t => t > nowMinutes);
-  if (nextMins === undefined) nextMins = targets[0] + 24 * 60; // tomorrow 05:00
+/* ================================================================
+   ROUTINES — appear EVERY day, morning top / evening bottom
+================================================================ */
+const ROUTINES = {
+  morning: [
+    { id:"r-brush-am",   name:"Brush Teeth",  icon:"🪥" }
+  ],
+  evening: [
+    { id:"r-brush-pm",   name:"Brush Teeth",  icon:"🪥" },
+    { id:"r-vitamin-pm", name:"Take Vitamin", icon:"💊" },
+  ]
+};
 
-  const msUntil = (nextMins - nowMinutes) * 60 * 1000 - (now.getSeconds() * 1000 + now.getMilliseconds());
-  setTimeout(() => { location.reload(); }, msUntil > 0 ? msUntil : 60000);
-}
-scheduleRefresh();
+/* ================================================================
+   SCHEDULE
+================================================================ */
+const SCHEDULE = {
+  Monday: [
+    { name:"Reading",          icon:"📖", duration:15, color:"--col-reading", type:"activity", time:"After school" },
+  ],
+  Tuesday: [
+    { name:"Writing Practice", icon:"✏️", duration:15, color:"--col-writing", type:"activity", time:"After school" },
+  ],
+  Wednesday: [
+    { name:"Maths",            icon:"🔢", duration:15, color:"--col-math",    type:"activity", time:"After school" },
+  ],
+  Thursday: [
+    { name:"Maths",            icon:"🔢", duration:15, color:"--col-math",    type:"activity", time:"After school" },
+    { name:"Dance Class 💃",   icon:"💃", duration:45, color:"--col-dance",   type:"activity", time:"4:00 PM" },
+  ],
+  Friday: [
+    { name:"Reading",          icon:"📖", duration:15, color:"--col-reading", type:"activity", time:"After school" },
+    { name:"TV / Screen Time", icon:"📺", duration:30, color:"--col-tv",      type:"tv",        time:"Evening" },
+  ],
+  Saturday: [
+    { name:"Reading",          icon:"📖", duration:20, color:"--col-reading", type:"activity", time:"Morning" },
+    { name:"Maths Activity",   icon:"🔢", duration:20, color:"--col-math",    type:"activity", time:"Morning" },
+    { name:"Writing Practice", icon:"✏️", duration:15, color:"--col-writing", type:"activity", time:"Afternoon" },
+    { name:"TV / Movie Time",  icon:"🎬", duration:30, color:"--col-tv",      type:"tv",        time:"Afternoon" },
+  ],
+  Sunday: [
+    { name:"Reading Together", icon:"📖", duration:20, color:"--col-reading", type:"activity", time:"Morning" },
+    { name:"Maths Activity",   icon:"🔢", duration:20, color:"--col-math",    type:"activity", time:"Afternoon" },
+    { name:"Writing Practice", icon:"✏️", duration:15, color:"--col-writing", type:"activity", time:"Afternoon" },
+    { name:"TV / Movie Time",  icon:"🎬", duration:30, color:"--col-tv",      type:"tv",        time:"Evening" },
+  ]
+};
 
-// Also reload if page has been open >6 hours (failsafe)
-setTimeout(() => location.reload(), 6 * 60 * 60 * 1000);
+const INITIAL_EVENTS = [];
+const WX_CODES = {0:"☀️",1:"🌤",2:"⛅",3:"☁️",45:"🌫",51:"🌦",53:"🌦",55:"🌧",61:"🌧",63:"🌧",65:"🌧",71:"❄️",80:"🌦",81:"🌧",95:"⛈"};
+const WX_DESC  = {0:"Clear sky",1:"Mainly clear",2:"Partly cloudy",3:"Overcast",45:"Foggy",51:"Light drizzle",53:"Drizzle",61:"Light rain",63:"Moderate rain",65:"Heavy rain",80:"Rain showers",95:"Thunderstorm"};
+const DAYS     = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const MONTHS   = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
-// ── CLOCK ──────────────────────────────────────────────────────────────
-const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
+/* ================================================================
+   CLOCK
+================================================================ */
 function updateClock() {
   const n = new Date();
-  const p = v => String(v).padStart(2,'0');
-  document.getElementById('clock').textContent = `${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
-  document.getElementById('datestr').textContent =
-    `${DAYS[n.getDay()]}  ·  ${n.getDate()} ${MONTHS[n.getMonth()]} ${n.getFullYear()}`;
+  let h = n.getHours();
+  const m = n.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  
+  // Günün saatine göre simge (Sabah, Öğle, Akşamüstü, Gece)
+  let icon = '🌙';
+  if (h >= 6 && h < 12) icon = '🌅';
+  else if (h >= 12 && h < 17) icon = '☀️';
+  else if (h >= 17 && h < 20) icon = '🌤️';
+
+  // 12 Saat formatına çevirme
+  h = h % 12;
+  h = h ? h : 12; // 0 olan saati 12 yapar
+
+  document.getElementById('clockTime').innerHTML = 
+    String(h) + ':' + String(m).padStart(2,'0') + 
+    `<span class="clock-ampm">${ampm}</span> <span class="clock-icon">${icon}</span>`;
+    
+  document.getElementById('clockDate').textContent =
+    DAYS[n.getDay()]+', '+n.getDate()+' '+MONTHS[n.getMonth()];
 }
-setInterval(updateClock, 1000);
-updateClock();
+setInterval(updateClock,1000); updateClock();
 
-// ── WMO MAPS ──────────────────────────────────────────────────────────
-const WMO_ICON = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'🌩️',95:'⛈️',96:'⛈️',99:'⛈️'};
-const WMO_DESC = {0:'Clear Sky',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Icy Fog',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',80:'Showers',81:'Heavy Showers',82:'Violent Showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
-const DAY_SHORT = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-
-// ── WEATHER ───────────────────────────────────────────────────────────
-async function fetchWeather() {
-  const lat = -37.8136, lon = 144.9631, cityName = 'Melbourne, VIC';
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weathercode,apparent_temperature&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max&timezone=Australia%2FMelbourne&forecast_days=5`;
+/* ================================================================
+   WEATHER (Open-Meteo, no API key)
+================================================================ */
+async function loadWeather() {
+  const LAT=-37.8136, LNG=144.9631;
   try {
-    const r = await fetch(url);
-    const d = await r.json();
-    renderWeather(d, cityName);
-  } catch(e) {
-    document.getElementById('weatherArea').innerHTML =
-      `<div class="weather-loading">⚠ WEATHER UNAVAILABLE — will retry</div>`;
-    setTimeout(fetchWeather, 60000);
-  }
-}
+    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LNG}&current=temperature_2m,weathercode&hourly=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Australia%2FMelbourne&forecast_days=6`);
+    const d=await r.json(), cur=d.current, code=cur.weathercode;
+    document.getElementById('hdr-wx-icon').textContent = WX_CODES[code]||'🌡';
+    document.getElementById('hdr-wx-temp').textContent = Math.round(cur.temperature_2m);
+    document.getElementById('hdr-wx-desc').textContent = WX_DESC[code]||'—';
+    document.getElementById('hdr-wx-range').textContent = '↑'+Math.round(d.daily.temperature_2m_max[0])+'° ↓'+Math.round(d.daily.temperature_2m_min[0])+'°';
 
-function renderWeather(d, cityName) {
-  const cur   = d.current;
-  const daily = d.daily;
-  const icon  = WMO_ICON[cur.weathercode] || '🌡️';
-  const desc  = WMO_DESC[cur.weathercode] || '';
+    const nowH=new Date().getHours(), todayS=new Date().toISOString().slice(0,10);
+    const hs=document.getElementById('wx-hourly'); hs.innerHTML=''; let shown=0;
+    for(let i=0;i<d.hourly.time.length&&shown<12;i++){
+      const t=d.hourly.time[i],date=t.slice(0,10),hr=parseInt(t.slice(11,13));
+      if(date<todayS)continue; if(date>todayS)break; if(hr<nowH-1)continue;
+      
+      // Hourly tahminleri de 12 saat formatına uyarlıyoruz
+      let hrLabel = '';
+      if(hr===0) hrLabel='12am';
+      else if(hr<12) hrLabel=hr+'am';
+      else if(hr===12) hrLabel='12pm';
+      else hrLabel=(hr-12)+'pm';
 
-  const weekCards = daily.time.map((dateStr, i) => {
-    const dt   = new Date(dateStr + 'T12:00:00');
-    const name = i === 0 ? 'TODAY' : DAY_SHORT[dt.getDay()];
-    const hi   = Math.round(daily.temperature_2m_max[i]);
-    const lo   = Math.round(daily.temperature_2m_min[i]);
-    const ic   = WMO_ICON[daily.weathercode[i]] || '🌡️';
-    const rain = daily.precipitation_probability_max[i];
-    return `
-      <div class="day-card${i===0?' today-card':''}">
-        <div class="day-name">${name}</div>
-        <div class="day-icon">${ic}</div>
-        <div class="day-hi">${hi}°</div>
-        <div class="day-lo">Low ${lo}°</div>
-        ${rain ? `<div class="day-rain">💧 ${rain}%</div>` : ''}
-      </div>`;
-  }).join('');
-
-  document.getElementById('weatherArea').innerHTML = `
-    <div class="today-hero">
-      <div class="today-icon">${icon}</div>
-      <div class="today-right">
-        <div class="today-temp-row">
-          <div class="today-temp">${Math.round(cur.temperature_2m)}</div>
-          <div class="today-unit">°C</div>
-        </div>
-        <div class="today-desc">${desc}</div>
-        <div class="today-city">${cityName}</div>
-        <div class="today-meta">
-          <div class="meta-item">
-            <span class="meta-label">Feels Like</span>
-            <span class="meta-value">${Math.round(cur.apparent_temperature)}°C</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Humidity</span>
-            <span class="meta-value">${cur.relative_humidity_2m}%</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Wind</span>
-            <span class="meta-value">${Math.round(cur.wind_speed_10m)} km/h</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Rain Chance</span>
-            <span class="meta-value">${daily.precipitation_probability_max[0]}%</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="divider"></div>
-    <div class="week-row">${weekCards}</div>
-  `;
-}
-
-// ── TICKER / RSS ───────────────────────────────────────────────────────
-// Multiple proxies to try in order
-const PROXIES = [
-  url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-  url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-];
-
-// ABC News RSS feeds
-const ABC_FEEDS = [
-  'https://www.abc.net.au/news/feed/51120/rss.xml',
-  'https://www.abc.net.au/news/feed/2942460/rss.xml',
-  'https://www.abc.net.au/news/feed/9489562/rss.xml',
-];
-
-async function fetchWithProxy(feedUrl) {
-  for (const makeUrl of PROXIES) {
-    try {
-      const proxyUrl = makeUrl(feedUrl);
-      const r = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
-      if (!r.ok) continue;
-      const text = await r.text();
-
-      // allorigins wraps in JSON
-      let xmlText = text;
-      try {
-        const j = JSON.parse(text);
-        if (j.contents) xmlText = j.contents;
-      } catch {}
-
-      const xml = new DOMParser().parseFromString(xmlText, 'text/xml');
-      const items = [...xml.querySelectorAll('item')];
-      if (items.length === 0) continue;
-
-      return items.slice(0, 15).map(it => ({
-        title: it.querySelector('title')?.textContent?.trim() || '',
-      })).filter(x => x.title.length > 5);
-    } catch {}
-  }
-  return [];
-}
-
-let tickerAnimFrame = null;
-let tickerPos = 0;
-let tickerSpeed = 0.6; // px per frame — comfortable reading speed
-
-async function loadTicker() {
-  // Try feeds one by one until we get results
-  let allItems = [];
-  for (const feed of ABC_FEEDS) {
-    const items = await fetchWithProxy(feed);
-    allItems = allItems.concat(items);
-    if (allItems.length >= 10) break;
-  }
-
-  // Dedupe
-  const seen = new Set();
-  const unique = allItems.filter(x => {
-    if (seen.has(x.title)) return false;
-    seen.add(x.title);
-    return true;
-  });
-
-  if (unique.length === 0) {
-    // Retry in 2 minutes
-    setTimeout(loadTicker, 2 * 60 * 1000);
-    return;
-  }
-
-  buildTicker(unique);
-  // Refresh headlines every 15 min
-  setTimeout(loadTicker, 15 * 60 * 1000);
-}
-
-function escHtml(s) {
-  return s.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#\d+;/g,'').replace(/&[a-z]+;/g,'');
-}
-
-function buildTicker(items) {
-  if (tickerAnimFrame) cancelAnimationFrame(tickerAnimFrame);
-
-  const track = document.getElementById('tickerTrack');
-  const makeSpan = item =>
-    `<span class="ticker-item"><span class="ticker-src">ABC</span>${escHtml(item.title)}</span>`;
-
-  // Triple duplicate so we always have content flowing
-  const html = items.map(makeSpan).join('');
-  track.innerHTML = html + html + html;
-  track.style.transform = 'translateX(0)';
-  tickerPos = 0;
-
-  // Wait a frame for layout, then measure one-set width
-  requestAnimationFrame(() => {
-    const oneSetWidth = track.scrollWidth / 3;
-
-    function animate() {
-      tickerPos += tickerSpeed;
-      if (tickerPos >= oneSetWidth) tickerPos = 0;
-      track.style.transform = `translateX(${-tickerPos}px)`;
-      tickerAnimFrame = requestAnimationFrame(animate);
+      hs.innerHTML+=`<div class="wx-hour${hr===nowH?' now':''}"><div class="wx-hour-time">${hr===nowH?'Now':hrLabel}</div><div class="wx-hour-icon">${WX_CODES[d.hourly.weathercode[i]]||'🌡'}</div><div class="wx-hour-temp">${Math.round(d.hourly.temperature_2m[i])}°</div></div>`;
+      shown++;
     }
-    animate();
+    const fs=document.getElementById('wx-forecast-strip'); fs.innerHTML='';
+    for(let i=1;i<=5;i++){
+      const fd=new Date(d.daily.time[i]+'T12:00:00');
+      fs.innerHTML+=`<div class="wx-fday"><div class="wx-fday-name">${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][fd.getDay()]}</div><div class="wx-fday-icon">${WX_CODES[d.daily.weathercode[i]]||'🌡'}</div><div class="wx-fday-range">${Math.round(d.daily.temperature_2m_max[i])}°/${Math.round(d.daily.temperature_2m_min[i])}°</div></div>`;
+    }
+  } catch(e){ document.getElementById('hdr-wx-desc').textContent='Offline'; }
+}
+loadWeather(); setInterval(loadWeather,10*60*1000);
+
+/* ================================================================
+   TIMER
+================================================================ */
+let timerTotal=0,timerLeft=0,timerInterval=null,timerRunning=false;
+const CIRC=301.59;
+function setTimer(min,label){timerReset();timerTotal=min*60;timerLeft=timerTotal;document.getElementById('timerLabel').textContent=label||(min+' min timer');updateTimerDisplay();}
+function setTimerCustom(){const v=parseInt(document.getElementById('customMinutes').value);if(v>0)setTimer(v);}
+function updateTimerDisplay(){
+  const m=Math.floor(timerLeft/60),s=timerLeft%60;
+  document.getElementById('timerDisplay').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  const ring=document.getElementById('timerRing');
+  ring.style.strokeDashoffset=CIRC*(1-(timerTotal>0?timerLeft/timerTotal:1));
+  ring.style.stroke=timerLeft<=10?'var(--red)':timerLeft<=60?'var(--yellow)':'var(--green)';
+}
+function timerStart(){
+  if(timerLeft<=0||timerRunning)return; timerRunning=true;
+  timerInterval=setInterval(()=>{
+    timerLeft--; updateTimerDisplay();
+    if(timerLeft<=0){clearInterval(timerInterval);timerRunning=false;document.getElementById('timerDisplay').classList.add('timer-alarm');showToast('⏰ Time is up!');setTimeout(()=>document.getElementById('timerDisplay').classList.remove('timer-alarm'),5000);}
+  },1000);
+}
+function timerPause(){clearInterval(timerInterval);timerRunning=false;}
+function timerReset(){
+  clearInterval(timerInterval);timerRunning=false;timerLeft=timerTotal;
+  document.getElementById('timerDisplay').classList.remove('timer-alarm');
+  timerTotal?updateTimerDisplay():(document.getElementById('timerDisplay').textContent='00:00',document.getElementById('timerRing').style.strokeDashoffset=0);
+}
+
+/* ================================================================
+   HOME ASSISTANT
+================================================================ */
+function haToggle(id){
+  const tile=document.getElementById(id),isOn=tile.classList.contains('on');
+  tile.classList.toggle('on');
+  tile.querySelector('.ha-tile-state').textContent=isOn?'Off':'On';
+  if(HA_ENABLED){
+    fetch(`${HA_URL}/api/services/light/${isOn?'turn_off':'turn_on'}`,{method:'POST',headers:{'Authorization':'Bearer '+HA_TOKEN,'Content-Type':'application/json'},body:JSON.stringify({entity_id:HA_DEVICES[id]?.entity_id})}).catch(()=>showToast('⚠️ HA failed'));
+  }
+}
+function vacuumCmd(cmd){
+  document.getElementById('vacuum-state').textContent={start:'Running 🌀',pause:'Paused ⏸',dock:'Returning…'}[cmd]||cmd;
+  if(HA_ENABLED){fetch(`${HA_URL}/api/services/vacuum/${{start:'start',pause:'pause',dock:'return_to_base'}[cmd]}`,{method:'POST',headers:{'Authorization':'Bearer '+HA_TOKEN,'Content-Type':'application/json'},body:JSON.stringify({entity_id:HA_VACUUM_ENTITY})}).catch(()=>showToast('⚠️ HA failed'));}
+  else showToast(cmd==='start'?'🤖 Vacuum started!':cmd==='pause'?'⏸ Paused':'⏏ Returning');
+}
+if(HA_ENABLED){document.getElementById('ha-note').textContent='✅ Connected to Home Assistant';document.getElementById('ha-note').style.color='var(--green)';}
+
+/* ================================================================
+   SCHEDULE
+================================================================ */
+let selectedDay=DAYS[new Date().getDay()];
+if(!SCHEDULE[selectedDay])selectedDay='Monday';
+
+function todayDateStr(){return new Date().toISOString().slice(0,10);}
+function routineKey(id){return'rtn:'+todayDateStr()+':'+id;}
+function actKey(day,idx){return'act:'+day+':'+idx;}
+function getC(key){try{return localStorage.getItem(key)==='1';}catch(e){return false;}}
+function setC(key,v){try{localStorage.setItem(key,v?'1':'0');}catch(e){}}
+
+function toggleRoutine(id){
+  const k=routineKey(id),nv=!getC(k);
+  setC(k,nv); renderSchedule();
+  showToast(nv?'🎉 Great job! ✅':'↩️ Unmarked');
+}
+function toggleAct(day,idx){setC(actKey(day,idx),!getC(actKey(day,idx)));renderSchedule();}
+
+function buildTabs(){
+  const wrap=document.getElementById('scheduleTabs'); wrap.innerHTML='';
+  const today=DAYS[new Date().getDay()];
+  Object.keys(SCHEDULE).forEach(day=>{
+    const isW=day==='Saturday'||day==='Sunday',isT=day===today;
+    const b=document.createElement('button');
+    b.className='day-tab'+(isW?' weekend':'')+(isT?' today-tab':'')+(day===selectedDay?' active':'');
+    b.textContent=day.slice(0,3)+(isT?' ★':'');
+    b.onclick=()=>{selectedDay=day;buildTabs();renderSchedule();};
+    wrap.appendChild(b);
   });
 }
 
-// ── INIT ───────────────────────────────────────────────────────────────
-fetchWeather();
-loadTicker();
+function renderSchedule(){
+  const list=document.getElementById('scheduleList');
+  const hl=document.getElementById('todayHighlight');
+  const today=DAYS[new Date().getDay()];
+  hl.style.display=selectedDay===today?'block':'none';
+  list.innerHTML='';
 
-// Weather refresh every 20 min
-setInterval(fetchWeather, 20 * 60 * 1000);
+  // ── Morning routines ──
+  const mlbl=document.createElement('div'); mlbl.className='sched-section-label'; mlbl.textContent='☀️ Morning Routines'; list.appendChild(mlbl);
+  ROUTINES.morning.forEach(r=>{
+    const done=getC(routineKey(r.id)), div=document.createElement('div');
+    div.className='schedule-item routine'+(done?' done':'');
+    div.style.borderColor=done?'var(--green)':'var(--border)';
+    div.onclick=()=>toggleRoutine(r.id);
+    div.innerHTML=`
+      <div class="sched-check ${done?'routine-checked':'routine-unchecked'}">${done?'✓':'✗'}</div>
+      <div class="schedule-icon">${r.icon}</div>
+      <div class="schedule-info">
+        <div class="schedule-name" style="color:${done?'var(--green)':'var(--col-routine)'}">${r.name}</div>
+        <div class="schedule-sub">Morning routine · Tap to complete</div>
+      </div>`;
+    list.appendChild(div);
+  });
 
-// Reconnect watchdog: if online event fires after offline, reload page
-window.addEventListener('online', () => {
-  setTimeout(() => location.reload(), 3000);
-});
+  // ── Activities ──
+  const albl=document.createElement('div'); albl.className='sched-section-label'; albl.textContent='📚 Today\'s Activities'; list.appendChild(albl);
+  const items=SCHEDULE[selectedDay]||[];
+  if(items.length===0){
+    const e=document.createElement('div'); e.style.cssText='color:var(--text3);font-size:14px;padding:12px 4px;font-weight:700;'; e.textContent='🎉 No activities today — enjoy the day!'; list.appendChild(e);
+  } else {
+    items.forEach((item,i)=>{
+      const k=actKey(selectedDay,i), done=getC(k), col=`var(${item.color})`;
+      const div=document.createElement('div');
+      div.className='schedule-item'+(done?' done':'');
+      div.style.borderColor=done?'var(--green)':col.replace('var(','').replace(')','');
+      if(!done) div.style.borderColor='';
+      div.style.borderLeftWidth='4px';
+      div.style.borderLeftColor=col;
+      if(done){div.style.background='var(--green-bg)';div.style.borderColor='var(--green)';}
+
+      div.innerHTML=`
+        <div class="sched-check ${done?'act-checked':'act-unchecked'}"
+             onclick="toggleAct('${selectedDay}',${i});event.stopPropagation();">${done?'✓':''}</div>
+        <div class="schedule-icon">${item.icon}</div>
+        <div class="schedule-info">
+          <div class="schedule-name" style="color:${done?'var(--green)':col}">${item.name}</div>
+          <div class="schedule-sub">${item.time||''} · ${item.duration} min</div>
+        </div>
+        <button class="schedule-timer-btn"
+          onclick="setTimer(${item.duration},'${item.name.replace(/'/g,'`')}');showToast('⏱ ${item.duration}m started!');event.stopPropagation();"
+          title="Start timer">⏱</button>`;
+      list.appendChild(div);
+    });
+  }
+
+  // ── Evening routines ──
+  const elbl=document.createElement('div'); elbl.className='sched-section-label'; elbl.textContent='🌙 Evening Routines'; list.appendChild(elbl);
+  ROUTINES.evening.forEach(r=>{
+    const done=getC(routineKey(r.id)), div=document.createElement('div');
+    div.className='schedule-item routine'+(done?' done':'');
+    div.style.borderColor=done?'var(--green)':'var(--border)';
+    div.onclick=()=>toggleRoutine(r.id);
+    div.innerHTML=`
+      <div class="sched-check ${done?'routine-checked':'routine-unchecked'}">${done?'✓':'✗'}</div>
+      <div class="schedule-icon">${r.icon}</div>
+      <div class="schedule-info">
+        <div class="schedule-name" style="color:${done?'var(--green)':'var(--col-routine)'}">${r.name}</div>
+        <div class="schedule-sub">Evening routine · Tap to complete</div>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+buildTabs(); renderSchedule();
+setInterval(()=>{buildTabs();renderSchedule();},60000);
+
+/* ================================================================
+   CALENDAR
+================================================================ */
+let calYear=new Date().getFullYear(),calMonth=new Date().getMonth(),events=[];
+function loadEvents(){try{events=[...INITIAL_EVENTS,...JSON.parse(localStorage.getItem('famEvents')||'[]')];}catch(e){events=[...INITIAL_EVENTS];}}
+function saveEvents(){localStorage.setItem('famEvents',JSON.stringify(events.filter(e=>!INITIAL_EVENTS.includes(e))));}
+function renderCalendar(){
+  document.getElementById('calMonth').textContent=MONTHS[calMonth]+' '+calYear;
+  const grid=document.getElementById('calGrid'); grid.innerHTML='';
+  ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d=>{const el=document.createElement('div');el.className='cal-day-header';el.textContent=d;grid.appendChild(el);});
+  const first=new Date(calYear,calMonth,1).getDay(),dim=new Date(calYear,calMonth+1,0).getDate(),today=new Date();
+  for(let i=0;i<first;i++){const el=document.createElement('div');el.className='cal-day other-month';el.innerHTML=`<span>${new Date(calYear,calMonth,0).getDate()-first+i+1}</span>`;grid.appendChild(el);}
+  for(let dd=1;dd<=dim;dd++){
+    const ds=calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
+    const el=document.createElement('div');
+    el.className='cal-day'+(dd===today.getDate()&&calMonth===today.getMonth()&&calYear===today.getFullYear()?' today':'');
+    const dots=events.filter(e=>e.date===ds).slice(0,3).map(e=>`<div class="cal-dot" style="background:${e.color}"></div>`).join('');
+    el.innerHTML=`<span>${dd}</span>${dots}`;
+    el.onclick=()=>{document.getElementById('evDate').value=ds;openAddEvent();};
+    grid.appendChild(el);
+  }
+  const rem=7-((first+dim)%7); if(rem<7)for(let i=1;i<=rem;i++){const el=document.createElement('div');el.className='cal-day other-month';el.innerHTML=`<span>${i}</span>`;grid.appendChild(el);}
+  renderUpcoming();
+}
+function renderUpcoming(){
+  const el=document.getElementById('eventsList'),ts=new Date().toISOString().slice(0,10);
+  const up=events.filter(e=>e.date>=ts).sort((a,b)=>(a.date+a.time)>(b.date+b.time)?1:-1).slice(0,5);
+  el.innerHTML='';
+  if(!up.length){el.innerHTML='<div style="text-align:center;color:var(--text3);font-size:12px;padding:8px;">No upcoming events</div>';return;}
+  up.forEach(ev=>{
+    const d=new Date(ev.date+'T12:00:00'),tom=new Date(Date.now()+86400000).toISOString().slice(0,10);
+    const label=ev.date===ts?'Today':ev.date===tom?'Tomorrow':d.getDate()+' '+MONTHS[d.getMonth()].slice(0,3);
+    const item=document.createElement('div'); item.className='event-item';
+    item.innerHTML=`<div class="event-dot" style="background:${ev.color}"></div><div class="event-text"><div class="event-title">${ev.who?ev.who+' · ':''}${ev.title}</div><div class="event-time">${label}${ev.time?' at '+ev.time:''}</div></div><button class="event-del" onclick="deleteEvent(${events.indexOf(ev)})">✕</button>`;
+    el.appendChild(item);
+  });
+}
+function deleteEvent(idx){events.splice(idx,1);saveEvents();renderCalendar();}
+function calNav(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++;}if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function openAddEvent(){if(!document.getElementById('evDate').value)document.getElementById('evDate').value=new Date().toISOString().slice(0,10);document.getElementById('eventModal').style.display='flex';}
+function closeModal(){document.getElementById('eventModal').style.display='none';document.getElementById('evTitle').value='';document.getElementById('evTime').value='';}
+function saveEvent(){
+  const title=document.getElementById('evTitle').value.trim(),date=document.getElementById('evDate').value;
+  if(!title||!date){alert('Please fill in title and date.');return;}
+  events.push({title,date,time:document.getElementById('evTime').value||'',color:document.getElementById('evColor').value,who:document.getElementById('evWho').value});
+  saveEvents();closeModal();renderCalendar();showToast('✅ Event saved!');
+}
+loadEvents(); renderCalendar();
+
+/* TOAST */
+let toastTmt;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTmt);toastTmt=setTimeout(()=>t.classList.remove('show'),2500);}
 </script>
 </body>
 </html>
