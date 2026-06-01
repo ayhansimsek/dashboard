@@ -7,14 +7,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* ── Soft sky-teal kids palette ─────────────────────────────
-     Kid-friendly, cheerful pastel blue background
-     instead of stark white, keeping cards clean.
-  ──────────────────────────────────────────────────────────── */
-  --bg:       #d8f1fa;   /* Cheerful pastel sky blue */
+  /* ── Soft sky-teal kids palette ───────────────────────────── */
+  --bg:       #CBE2FE;   /* <-- ARKAPLAN RENGİNİ BURADAN DEĞİŞTİREBİLİRSİN */
   --bg2:      #e6f7fc;
   --bg3:      #c2e5df;
-  --card:     #ffffff;   /* white cards */
+  --card:     #FFE8F0;   /* white cards */
   --card2:    #f0faf8;
   --border:   #aaddd5;
   --text:     #1a3a36;   /* dark teal text */
@@ -57,7 +54,7 @@ html, body {
   font-size: 15px;
 }
 
-/* Cheerful cloud/sun background */
+/* Cheerful cloud/sun background (Bunu istersen silebilirsin) */
 body::before {
   content: '';
   position: fixed; inset: 0; pointer-events: none; z-index: 0;
@@ -93,22 +90,22 @@ body::before {
   box-shadow: var(--shadow);
 }
 .header-left { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-.header-emoji { font-size: 32px; } /* YAZILAR BÜYÜTÜLDÜ */
-.header-title { font-family: 'Baloo 2', sans-serif; font-size: 24px; font-weight: 800; color: var(--accent); } /* YAZILAR BÜYÜTÜLDÜ */
+.header-emoji { font-size: 32px; }
+.header-title { font-family: 'Baloo 2', sans-serif; font-size: 24px; font-weight: 800; color: var(--accent); }
 
 .clock-block { text-align: center; flex-shrink: 0; }
 .clock-time { 
   font-family: 'Baloo 2', sans-serif; font-size: 42px; font-weight: 800; color: var(--text); 
   line-height: 1; letter-spacing: 2px; display: flex; align-items: baseline; justify-content: center; gap: 6px; 
-} /* SAAT BÜYÜTÜLDÜ VE FLEX YAPILDI */
+}
 .clock-ampm { font-size: 16px; color: var(--text3); font-weight: 800; letter-spacing: 0px; }
 .clock-icon { font-size: 32px; line-height: 1; transform: translateY(4px); }
-.clock-date { font-size: 14px; color: var(--text3); margin-top: 4px; font-weight: 700; } /* TARİH BÜYÜTÜLDÜ */
+.clock-date { font-size: 14px; color: var(--text3); margin-top: 4px; font-weight: 700; }
 
 .header-weather { flex: 1; overflow: hidden; }
 .header-wx-now { display: flex; align-items: center; gap: 12px; }
-.header-wx-icon { font-size: 32px; line-height: 1; } /* HAVA DURUMU İKONU BÜYÜTÜLDÜ */
-.header-wx-temp { font-family: 'Baloo 2', sans-serif; font-size: 32px; font-weight: 800; color: var(--text); line-height: 1; } /* DERECE BÜYÜTÜLDÜ */
+.header-wx-icon { font-size: 32px; line-height: 1; }
+.header-wx-temp { font-family: 'Baloo 2', sans-serif; font-size: 32px; font-weight: 800; color: var(--text); line-height: 1; }
 .header-wx-desc { font-size: 13px; color: var(--text2); font-weight: 700; }
 .header-wx-range { font-size: 12px; color: var(--text3); }
 
@@ -660,12 +657,25 @@ const DAYS     = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","S
 const MONTHS   = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 /* ================================================================
+   OTOMATİK YENİLEME (AUTO-REFRESH) SAATLERİ
+================================================================ */
+const REFRESH_TIMES = [
+  { h: 6, m: 0 },   // 6:00 AM
+  { h: 11, m: 59 }, // 11:59 AM
+  { h: 15, m: 0 },  // 3:00 PM
+  { h: 18, m: 0 },  // 6:00 PM
+  { h: 21, m: 0 },  // 9:00 PM
+  { h: 23, m: 59 }  // 11:59 PM
+];
+
+/* ================================================================
    CLOCK
 ================================================================ */
 function updateClock() {
   const n = new Date();
   let h = n.getHours();
   const m = n.getMinutes();
+  const s = n.getSeconds();
   const ampm = h >= 12 ? 'PM' : 'AM';
   
   // Günün saatine göre simge (Sabah, Öğle, Akşamüstü, Gece)
@@ -673,6 +683,15 @@ function updateClock() {
   if (h >= 6 && h < 12) icon = '🌅';
   else if (h >= 12 && h < 17) icon = '☀️';
   else if (h >= 17 && h < 20) icon = '🌤️';
+
+  // Otomatik sayfa yenileme kontrolü (Saniye tam 0 olduğunda kontrol eder)
+  if (s === 0) {
+    for (let t of REFRESH_TIMES) {
+      if (h === t.h && m === t.m) {
+        window.location.reload();
+      }
+    }
+  }
 
   // 12 Saat formatına çevirme
   h = h % 12;
